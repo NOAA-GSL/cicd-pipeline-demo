@@ -91,6 +91,12 @@ flowchart TD
         J[📦 Container Image Available]
     end
     
+    subgraph "Deployment Targets"
+        L[🏠 Local Kubernetes]
+        M[☁️ AWS ECS/EKS]
+        N[☁️ Azure Container Apps]
+    end
+    
     A --> B
     B --> C
     C --> D
@@ -101,6 +107,112 @@ flowchart TD
     G --> H
     H --> I
     I --> J
+    J --> L
+    J --> M
+    J --> N
+```
+
+### 🚀 Deployment Examples
+
+Once the container is published to GitHub Packages, you can deploy it anywhere:
+
+#### 🏠 Local Kubernetes (minikube, kind, k3s)
+
+```bash
+# Create a secret for GHCR authentication
+kubectl create secret docker-registry ghcr-secret \
+  --docker-server=ghcr.io \
+  --docker-username=$GITHUB_USER \
+  --docker-password=$GITHUB_TOKEN
+
+# Deploy using kubectl
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cicd-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cicd-demo
+  template:
+    metadata:
+      labels:
+        app: cicd-demo
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: app
+          image: ghcr.io/noaa-gsl/cicd-pipeline-demo:latest
+          ports:
+            - containerPort: 8112
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cicd-demo
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8112
+  selector:
+    app: cicd-demo
+EOF
+```
+
+#### ☁️ AWS (ECS Fargate)
+
+```bash
+# Authenticate Docker to GHCR
+echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USER --password-stdin
+
+# Create ECS task definition
+aws ecs register-task-definition \
+  --family cicd-demo \
+  --network-mode awsvpc \
+  --requires-compatibilities FARGATE \
+  --cpu 256 --memory 512 \
+  --container-definitions '[{
+    "name": "app",
+    "image": "ghcr.io/noaa-gsl/cicd-pipeline-demo:latest",
+    "portMappings": [{"containerPort": 8112, "protocol": "tcp"}],
+    "essential": true
+  }]'
+
+# Run the service
+aws ecs create-service \
+  --cluster my-cluster \
+  --service-name cicd-demo \
+  --task-definition cicd-demo \
+  --desired-count 2 \
+  --launch-type FARGATE
+```
+
+#### ☁️ Azure (Container Apps)
+
+```bash
+# Login to Azure
+az login
+
+# Create a Container App environment (one-time setup)
+az containerapp env create \
+  --name my-environment \
+  --resource-group my-rg \
+  --location eastus
+
+# Deploy the container from GHCR
+az containerapp create \
+  --name cicd-demo \
+  --resource-group my-rg \
+  --environment my-environment \
+  --image ghcr.io/noaa-gsl/cicd-pipeline-demo:latest \
+  --target-port 8112 \
+  --ingress external \
+  --registry-server ghcr.io \
+  --registry-username $GITHUB_USER \
+  --registry-password $GITHUB_TOKEN
 ```
 
 ---

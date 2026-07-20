@@ -96,9 +96,27 @@ jobs:
             type=semver,pattern={{version}}
             type=raw,value=latest
 
-      # Build and push the Docker image with caching
-      # cache-from/to uses GitHub Actions cache for faster builds
-      - name: Build and push Docker image
+      # Build Docker image locally first (don't push yet)
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true  # Load into local Docker daemon for testing
+          tags: cicd-pipeline-demo:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Test the container BEFORE pushing to ensure it works
+      - name: Test container health
+        run: |
+          docker run -d --name test-container -p 8112:8112 cicd-pipeline-demo:test
+          sleep 5
+          curl --fail http://localhost:8112/health || exit 1
+          docker stop test-container
+          docker rm test-container
+
+      # Only push if health check passed
+      - name: Push Docker image to GHCR
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -107,11 +125,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # Verify the container actually works before considering success
-      - name: Test container health
-        run: |
-          docker compose up -d web
-          sleep 5
-          curl --fail http://localhost:8112/health || exit 1
-          docker compose down
