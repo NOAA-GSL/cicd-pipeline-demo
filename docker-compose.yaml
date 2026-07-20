@@ -1,0 +1,35 @@
+# Docker Compose configuration for Hello World FastAPI
+# Documentation: https://docs.docker.com/compose/compose-file/
+
+services:
+  # Main web application service
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    container_name: hello-world-fastapi
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Test service - runs unit tests inside container
+  # Usage: docker compose --profile testing run --rm test
+  test:
+    build: .
+    command: pytest -v
+    profiles:
+      - testing
+
+  # Lint service - runs code quality checks inside container
+  # Usage: docker compose --profile testing run --rm lint
+  lint:
+    build: .
+    command: ruff check .
+    profiles:
+      - testing

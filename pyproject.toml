@@ -1,0 +1,37 @@
+# Project configuration
+# This file configures tools like ruff (linter) for the project
+
+[tool.ruff]
+# Set the maximum line length
+line-length = 100
+
+# Target Python 3.11 (matches Dockerfile)
+target-version = "py311"
+
+# Exclude common directories
+exclude = [
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    "venv",
+]
+
+[tool.ruff.lint]
+# Enable these rule sets:
+# E = pycodestyle errors
+# F = Pyflakes
+# I = isort (import sorting)
+# W = pycodestyle warnings
+select = ["E", "F", "I", "W"]
+
+# Ignore these specific rules:
+ignore = [
+    "E501",  # Line too long (handled by formatter)
+]
+
+[tool.pytest.ini_options]
+# Pytest configuration
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"

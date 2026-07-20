@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World - CI/CD Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .comment {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .comment strong {
+            color: #007bff;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #comments {
+            margin: 20px 0;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Hello World - CI/CD Demo</h1>
+    
+    <div class="info-box">
+        <strong>About this project:</strong> This is a demonstration of GitHub Actions CI/CD pipeline 
+        that automatically builds, tests, and deploys a Docker container to GitHub Packages.
+    </div>
+
+    <h2>💬 Comments</h2>
+    <div id="comments">Loading comments...</div>
+    
+    <h3>Add a Comment</h3>
+    <input type="text" id="author" placeholder="Your Name" maxlength="50">
+    <textarea id="text" placeholder="Your Comment" rows="3" maxlength="500"></textarea>
+    <button onclick="submitComment()">Submit Comment</button>
+
+    <script>
+        // Function to fetch and display comments
+        async function loadComments() {
+            try {
+                const response = await fetch('/comments');
+                const comments = await response.json();
+                const commentsDiv = document.getElementById('comments');
+                
+                if (comments.length === 0) {
+                    commentsDiv.innerHTML = '<p style="color: #666;">No comments yet. Be the first to comment!</p>';
+                    return;
+                }
+                
+                commentsDiv.innerHTML = '';
+                comments.forEach(comment => {
+                    const commentDiv = document.createElement('div');
+                    commentDiv.className = 'comment';
+                    commentDiv.innerHTML = `<strong>${escapeHtml(comment.author)}</strong>: ${escapeHtml(comment.text)}`;
+                    commentsDiv.appendChild(commentDiv);
+                });
+            } catch (error) {
+                document.getElementById('comments').innerHTML = '<p style="color: red;">Error loading comments.</p>';
+            }
+        }
+
+        // Function to escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Function to submit a new comment
+        async function submitComment() {
+            const author = document.getElementById('author').value.trim();
+            const text = document.getElementById('text').value.trim();
+            
+            if (!author || !text) {
+                alert('Please fill in both your name and comment.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/comments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({author: author, text: text}),
+                });
+                
+                if (response.ok) {
+                    document.getElementById('author').value = '';
+                    document.getElementById('text').value = '';
+                    loadComments();
+                } else {
+                    alert('Failed to submit comment. Please try again.');
+                }
+            } catch (error) {
+                alert('Error submitting comment. Please try again.');
+            }
+        }
+
+        // Load comments on page load
+        window.onload = loadComments;
+    </script>
+</body>
+</html>
