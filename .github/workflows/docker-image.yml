@@ -3,21 +3,21 @@ name: Build, Test, and Push Docker Image
 # =============================================================================
 # TRIGGER CONFIGURATION
 # This workflow runs on:
-#   - Every push to 'main' branch (for deployment)
-#   - Every pull request targeting 'main' (for validation)
+#   - Every push to 'master' branch (for deployment)
+#   - Every pull request targeting 'master' (for validation)
 # =============================================================================
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   # ===========================================================================
   # JOB 1: TEST
   # Purpose: Run unit tests inside a container before building
   # Runs on: Every push AND every pull request
-  # Why: Catch bugs early, before they reach main branch
+  # Why: Catch bugs early, before they reach master branch
   # ===========================================================================
   test:
     runs-on: ubuntu-latest
@@ -49,16 +49,16 @@ jobs:
   # ===========================================================================
   # JOB 3: BUILD AND PUSH
   # Purpose: Build Docker image and push to GitHub Container Registry
-  # Runs on: ONLY on push to main, AFTER tests and lint pass
+  # Runs on: ONLY on push to master, AFTER tests and lint pass
   # Why: Only deploy code that has passed all quality gates
   # ===========================================================================
   build-and-push:
     needs: [test, lint]  # Wait for BOTH test and lint to pass
     runs-on: ubuntu-latest
     
-    # Only run this job on push to main (not on PRs)
+    # Only run this job on push to master (not on PRs)
     # PRs should only test, not deploy
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     
     # Permissions required for this job:
     permissions:
@@ -113,5 +113,5 @@ jobs:
         run: |
           docker compose up -d web
           sleep 5
-          curl --fail http://localhost:8000/health || exit 1
+          curl --fail http://localhost:8112/health || exit 1
           docker compose down

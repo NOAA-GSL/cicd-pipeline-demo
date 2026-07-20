@@ -19,7 +19,7 @@ COPY pyproject.toml .
 COPY static/ ./static/
 COPY tests/ ./tests/
 
-# Make port 8000 available
+# Make port 8112 available
 EXPOSE 8112
 
 # Run the application

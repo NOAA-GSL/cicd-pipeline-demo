@@ -47,7 +47,7 @@ cd cicd-pipeline-demo
 # Build and run the container
 docker compose up --build
 
-# Visit http://localhost:8000 in your browser
+# Visit http://localhost:8112 in your browser
 ```
 
 ### Run Tests (Inside Container)
@@ -121,7 +121,7 @@ flowchart TD
 - Check code style and potential bugs
 ```
 
-### 3. **Build & Push Job** (Only on main branch, after tests AND lint pass)
+### 3. **Build & Push Job** (Only on master branch, after tests AND lint pass)
 ```yaml
 - Setup Docker Buildx (for efficient builds)
 - Login to GitHub Container Registry (GHCR)
@@ -181,11 +181,11 @@ docker compose --profile testing run --rm test && docker compose --profile testi
 
 ## 📦 GitHub Packages
 
-After a successful build on the `main` branch, the container image is published to:
+After a successful build on the `master` branch, the container image is published to:
 
 ```
 ghcr.io/NOAA-GSL/cicd-pipeline-demo:latest
-ghcr.io/NOAA-GSL/cicd-pipeline-demo:main
+ghcr.io/NOAA-GSL/cicd-pipeline-demo:master
 ghcr.io/NOAA-GSL/cicd-pipeline-demo:sha-<full-commit-sha>
 ```
 
@@ -193,7 +193,7 @@ ghcr.io/NOAA-GSL/cicd-pipeline-demo:sha-<full-commit-sha>
 
 ```bash
 docker pull ghcr.io/NOAA-GSL/cicd-pipeline-demo:latest
-docker run -p 8000:8000 ghcr.io/NOAA-GSL/cicd-pipeline-demo:latest
+docker run -p 8112:8112 ghcr.io/NOAA-GSL/cicd-pipeline-demo:latest
 ```
 
 ---
@@ -233,10 +233,10 @@ docker compose exec web /bin/bash
 
 Understanding CI/CD means knowing what happens in different situations:
 
-### Scenario 1: Developer pushes directly to `main`
+### Scenario 1: Developer pushes directly to `master`
 ```mermaid
 flowchart LR
-    A[Push to main] --> B[Test Job Runs]
+    A[Push to master] --> B[Test Job Runs]
     B --> C[Lint Job Runs]
     C --> D{Both Pass?}
     D -->|Yes| E[Build & Push Job]
@@ -272,7 +272,7 @@ flowchart LR
 flowchart LR
     A[Push to feature/xyz] --> B[Nothing Happens]
 ```
-**Result:** Workflow only triggers on `main` branch and PRs to `main`.
+**Result:** Workflow only triggers on `master` branch and PRs to `master`.
 
 ---
 
@@ -281,7 +281,7 @@ flowchart LR
 For a complete CI/CD setup, enable branch protection in GitHub:
 
 1. Go to **Settings → Branches → Add rule**
-2. Set branch name pattern: `main`
+2. Set branch name pattern: `master`
 3. Enable these options:
    - ✅ Require a pull request before merging
    - ✅ Require status checks to pass before merging
