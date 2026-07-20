@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+
 from main import app, comments
 
 client = TestClient(app)
@@ -44,7 +45,7 @@ def test_create_and_get_comments():
         "/comments",
         json={"author": "Jane Doe", "text": "Hello World!"},
     )
-    
+
     # Get comments
     response = client.get("/comments")
     assert response.status_code == 200
@@ -56,7 +57,7 @@ def test_create_multiple_comments():
     """Test creating multiple comments"""
     client.post("/comments", json={"author": "User 1", "text": "First comment"})
     client.post("/comments", json={"author": "User 2", "text": "Second comment"})
-    
+
     response = client.get("/comments")
     assert response.status_code == 200
     assert len(response.json()) == 2

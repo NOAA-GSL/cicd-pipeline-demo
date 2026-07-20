@@ -1,9 +1,10 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 import os
+from typing import List
+
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 app = FastAPI(title="Hello World API", description="A simple FastAPI application demonstrating CI/CD with GitHub Actions")
 
