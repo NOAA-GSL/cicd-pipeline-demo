@@ -89,7 +89,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/cd_cd
+          images: ghcr.io/${{ github.repository_owner }}/cicd-pipeline-demo
           tags: |
             type=sha,format=long
             type=ref,event=branch

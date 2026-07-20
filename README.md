@@ -16,7 +16,7 @@ This educational project shows:
 ## 📁 Project Structure
 
 ```
-cd_cd/
+cicd-pipeline-demo/
 ├── docker-compose.yaml    # Container orchestration
 ├── Dockerfile             # Container definition
 ├── main.py                # FastAPI application
@@ -41,8 +41,8 @@ cd_cd/
 
 ```bash
 # Clone the repository
-git clone https://github.com/NOAA-GSL/cd_cd.git
-cd cd_cd
+git clone https://github.com/NOAA-GSL/cicd-pipeline-demo.git
+cd cicd-pipeline-demo
 
 # Build and run the container
 docker compose up --build
@@ -126,7 +126,7 @@ flowchart TD
 - Setup Docker Buildx (for efficient builds)
 - Login to GitHub Container Registry (GHCR)
 - Build Docker image with caching
-- Push to ghcr.io/NOAA-GSL/cd_cd
+- Push to ghcr.io/NOAA-GSL/cicd-pipeline-demo
 - Verify container starts and responds to health check
 ```
 
@@ -184,16 +184,16 @@ docker compose --profile testing run --rm test && docker compose --profile testi
 After a successful build on the `main` branch, the container image is published to:
 
 ```
-ghcr.io/NOAA-GSL/cd_cd:latest
-ghcr.io/NOAA-GSL/cd_cd:main
-ghcr.io/NOAA-GSL/cd_cd:sha-<full-commit-sha>
+ghcr.io/NOAA-GSL/cicd-pipeline-demo:latest
+ghcr.io/NOAA-GSL/cicd-pipeline-demo:main
+ghcr.io/NOAA-GSL/cicd-pipeline-demo:sha-<full-commit-sha>
 ```
 
 ### Pull and Run the Published Image
 
 ```bash
-docker pull ghcr.io/NOAA-GSL/cd_cd:latest
-docker run -p 8000:8000 ghcr.io/NOAA-GSL/cd_cd:latest
+docker pull ghcr.io/NOAA-GSL/cicd-pipeline-demo:latest
+docker run -p 8000:8000 ghcr.io/NOAA-GSL/cicd-pipeline-demo:latest
 ```
 
 ---
