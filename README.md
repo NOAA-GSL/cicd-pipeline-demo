@@ -1,6 +1,6 @@
 # Hello World FastAPI - CI/CD Demo
 
-A self-contained demonstration of GitHub Actions CI/CD pipeline that builds, tests, and deploys a Docker container to GitHub Packages. **Everything runs inside containers for cloud deployment - nothing is installed on the host.**
+A self-contained demonstration of GitHub Actions Continuous Integration (CI) & Continuous Deployment (CD) CI/CD pipeline that builds, tests, and deploys a Docker container to GitHub Packages. **Everything runs inside containers for cloud deployment - nothing is installed on the host.**
 
 ## 🎯 What This Project Demonstrates
 
